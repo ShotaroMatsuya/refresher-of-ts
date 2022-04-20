@@ -1,13 +1,19 @@
 {
-  "name": "understanding-ts",
+  "name": "understanding-typescript",
   "version": "1.0.0",
-  "description": "",
+  "description": "Understanding TypeScript Course Setup",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start2": "lite-server",
     "start": "webpack serve",
-    "build": "webpack --config webpack.config.prod.js"
+    "build": "webpack --config webpack.config.prod.js",
+    "watch": "tsc -w"
   },
+  "keywords": [
+    "typescript",
+    "course"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
