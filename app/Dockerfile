@@ -6,8 +6,8 @@ COPY package.json .
 
 RUN npm install
 
-RUN apk update && \
-  npm install -g typescript
+# RUN apk update
+  # npm install -g typescript
   # npm install --save lite-saver
 
 COPY . .

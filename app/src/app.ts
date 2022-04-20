@@ -66,3 +66,5 @@ console.log(hobbies, hobby1, hobby2);
 const { firstName: userName, age } = person;
 
 console.log(userName, age, person);
+
+console.log('test!!!!');
