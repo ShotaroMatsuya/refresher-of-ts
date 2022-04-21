@@ -81,3 +81,25 @@ console.log(textStorage.getItems());
 
 // objStorage.removeItem(user1Obj); // this obj is technically a brand new object in a memory and has a different address
 // console.log(objStorage.getItems());
+
+interface CourseGoal {
+  title: string;
+  description: string;
+  completeUntil: Date;
+}
+
+function createCourseGoal(
+  title: string,
+  description: string,
+  date: Date
+): CourseGoal {
+  let courseGoal: Partial<CourseGoal> = {};
+  courseGoal.title = title;
+  courseGoal.description = description;
+  courseGoal.completeUntil = date;
+  return courseGoal as CourseGoal;
+}
+
+const names: Readonly<string[]> = ['User1', 'user2'];
+names.push('user3');
+names.pop();
