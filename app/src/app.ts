@@ -44,6 +44,13 @@ const fetchedUserData = {
 };
 console.log(fetchedUserData?.job?.title);
 
+const userInput = '';
+
+// const storedData = userInput || 'DEFAULT';
+const storedData = userInput ?? 'DEFAULT'; // return default value only if null or undefined
+
+console.log(storedData);
+
 // type UnknownEmployee = Employee | Admin;
 
 // function printEmployeeInformation(emp: UnknownEmployee) {
