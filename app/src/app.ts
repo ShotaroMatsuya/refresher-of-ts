@@ -71,15 +71,26 @@ function useVehicle(vehicle: Vehicle) {
 useVehicle(v1);
 useVehicle(v2);
 
-// use interface
-// interface Admin {
-//   name: string;
-//   privileges: string[];
-// }
+interface Bird {
+  type: 'bird';
+  flyingSpeed: number;
+}
 
-// interface Employee {
-//   name: string;
-//   startDate: Date;
-// };
+interface Horse {
+  type: 'horse';
+  runningSpeed: number;
+}
+type Animal = Bird | Horse;
 
-// interface ElevatedEmployee extends Admin, Employee {};
+function moveAnimal(animal: Animal) {
+  let speed;
+  switch (animal.type) {
+    case 'bird':
+      speed = animal.flyingSpeed;
+      break;
+    case 'horse':
+      speed = animal.runningSpeed;
+  }
+  console.log('Moving at speed: ' + speed);
+}
+moveAnimal({ type: 'bird', flyingSpeed: 10 });
