@@ -16,11 +16,11 @@
 // }
 
 // use Generic types
-function merge<T, U>(objA: T, objB: U) {
+function merge<T extends object, U extends object>(objA: T, objB: U) {
   return Object.assign(objA, objB);
 }
 
 console.log(merge({ name: 'Max' }, { age: 30 }));
-const mergedObj = merge({ name: 'Max' }, { age: 30 });
+const mergedObj = merge({ name: 'Max', hobbies: ['sports'] }, { age: 30 });
 // console.log(mergedObj.name); //Property 'name' does not exist on type 'object'.
-console.log(mergedObj.name);
+console.log(mergedObj.age);
