@@ -5,9 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack serve",
-    "build": "webpack --config webpack.config.prod.js",
-    "watch": "tsc -w"
+    "start": "webpack serve"
   },
   "keywords": [
     "typescript",
