@@ -1,8 +1,23 @@
-// Project State Management
+// Project Type
+enum ProjectStatus {
+  Active,
+  Finished,
+}
+class Project {
+  constructor(
+    public id: string,
+    public title: string,
+    public description: string,
+    public people: number,
+    public status: ProjectStatus
+  ) {}
+}
 
+// Project State Management
+type Listener = (items: Project[]) => void;
 class ProjectState {
-  private listeners: any[] = [];
-  private projects: any[] = [];
+  private listeners: Listener[] = [];
+  private projects: Project[] = [];
   private static instance: ProjectState;
   private constructor() {}
 
@@ -14,17 +29,18 @@ class ProjectState {
     return this.instance;
   }
   //listの描画時に実行される関数をlistenersプロパティにjobとしてためておく
-  addListener(listenerFn: Function) {
+  addListener(listenerFn: Listener) {
     this.listeners.push(listenerFn);
   }
 
   addProject(title: string, description: string, numOfPeople: number) {
-    const newProject = {
-      id: Math.random().toString(),
-      title: title,
-      description: description,
-      people: numOfPeople,
-    };
+    const newProject = new Project(
+      Math.random().toString(),
+      title,
+      description,
+      numOfPeople,
+      ProjectStatus.Active
+    );
     this.projects.push(newProject);
     // listenerに格納されているjobがここで実行されている
     // listの描画が実行される
@@ -119,7 +135,7 @@ class ProjectList {
 
     // listのconstructorが呼び出されるたびに、addListenerが実行される
     // 引数のcallback関数はjobとして配列に格納される
-    projectState.addListener((projects: any[]) => {
+    projectState.addListener((projects: Project[]) => {
       this.assignedProjects = projects;
       this.renderProjects();
     });
