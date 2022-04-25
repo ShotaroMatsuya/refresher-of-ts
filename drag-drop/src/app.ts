@@ -1,3 +1,18 @@
+// Drag & Drop Interfaces
+interface Draggable {
+  dragStartHandler(event: DragEvent): void;
+  dragEndHandler(event: DragEvent): void;
+}
+
+interface DragTarget {
+  // signal the browser & js that dragging something over is a valid drag target(permit to the drop)
+  dragOverHandler(event: DragEvent): void;
+  // react to the actual drop that happens.
+  dropHandler(event: DragEvent): void;
+  // visual feedback to users when they drag something over the box if no drop happens & instead it's cancelled or removed
+  dragLeaveHandler(event: DragEvent): void;
+}
+
 // Project Type
 //グローバル定数として使える
 enum ProjectStatus {
@@ -180,7 +195,18 @@ class ProjectItem extends Component<HTMLUListElement, HTMLLIElement> {
     this.configure();
     this.renderContent();
   }
-  configure() {}
+  @autobind
+  dragStartHandler(event: DragEvent) {
+    event.dataTransfer!.setData('text/plain', this.project.id);
+    event.dataTransfer!.effectAllowed = 'move';
+  }
+  dragEndHandler(_: DragEvent) {
+    console.log('DragEnd');
+  }
+  configure() {
+    this.element.addEventListener('dragstart', this.dragStartHandler);
+    this.element.addEventListener('dragend', this.dragEndHandler);
+  }
 
   renderContent() {
     this.element.querySelector('h2')!.textContent = this.project.title;
@@ -191,7 +217,10 @@ class ProjectItem extends Component<HTMLUListElement, HTMLLIElement> {
 
 // Project LIst class
 
-class ProjectList extends Component<HTMLDivElement, HTMLElement> {
+class ProjectList
+  extends Component<HTMLDivElement, HTMLElement>
+  implements DragTarget
+{
   assignedProjects: Project[];
 
   constructor(private type: 'active' | 'finished') {
@@ -202,7 +231,25 @@ class ProjectList extends Component<HTMLDivElement, HTMLElement> {
     this.configure();
     this.renderContent();
   }
+  @autobind
+  dragOverHandler(event: DragEvent) {
+    if (event.dataTransfer && event.dataTransfer.types[0] === 'text/plain') {
+      event.preventDefault();
+      const listEl = this.element.querySelector('ul')!;
+      listEl.classList.add('droppable');
+    }
+  }
+  @autobind
+  dropHandler(_: DragEvent) {}
+  @autobind
+  dragLeaveHandler(_: DragEvent) {
+    const listEl = this.element.querySelector('ul')!;
+    listEl.classList.remove('droppable');
+  }
   configure() {
+    this.element.addEventListener('dragover', this.dragOverHandler);
+    this.element.addEventListener('dragleave', this.dragLeaveHandler);
+    this.element.addEventListener('drop', this.dropHandler);
     // listのconstructorが呼び出されるたびに、addListenerが実行される
     // 引数のcallback関数はjobとして配列に格納される
     projectState.addListener((projects: Project[]) => {
