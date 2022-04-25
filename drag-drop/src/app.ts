@@ -15,23 +15,29 @@ class Project {
 }
 
 // Project State Management
-type Listener = (items: Project[]) => void;
-class ProjectState {
-  private listeners: Listener[] = [];
+type Listener<T> = (items: T[]) => void;
+
+class State<T> {
+  protected listeners: Listener<T>[] = [];
+
+  //listの描画時に実行される関数をlistenersプロパティにjobとしてためておく
+  addListener(listenerFn: Listener<T>) {
+    this.listeners.push(listenerFn);
+  }
+}
+class ProjectState extends State<Project> {
   private projects: Project[] = [];
   private static instance: ProjectState;
-  private constructor() {}
 
+  private constructor() {
+    super();
+  }
   static getInstance() {
     if (this.instance) {
       return this.instance;
     }
     this.instance = new ProjectState();
     return this.instance;
-  }
-  //listの描画時に実行される関数をlistenersプロパティにjobとしてためておく
-  addListener(listenerFn: Listener) {
-    this.listeners.push(listenerFn);
   }
 
   addProject(title: string, description: string, numOfPeople: number) {
@@ -111,29 +117,65 @@ function autobind(_: any, _2: string, descriptor: PropertyDescriptor) {
   return adjDescriptor;
 }
 
-// Project LIst class
-
-class ProjectList {
+// Component Base Class
+// abstractなので直接インスタンス化不可
+// abstract methodはすべてオーバーライドしないといけない
+abstract class Component<T extends HTMLElement, U extends HTMLElement> {
   templateElement: HTMLTemplateElement;
-  hostElement: HTMLDivElement;
-  element: HTMLElement;
-  assignedProjects: any[];
+  hostElement: T;
+  element: U;
 
-  constructor(private type: 'active' | 'finished') {
+  constructor(
+    templateId: string,
+    hostElementId: string,
+    insertAtStart: boolean,
+    newElementId?: string
+  ) {
     this.templateElement = document.getElementById(
-      'project-list'
+      templateId
     )! as HTMLTemplateElement;
-    this.hostElement = document.getElementById('app')! as HTMLDivElement;
-    this.assignedProjects = [];
-
+    this.hostElement = document.getElementById(hostElementId)! as T;
     // importNode...Nodeエレメントを複製する(recursiveに)
+
     const importedNode = document.importNode(
       this.templateElement.content,
       true
     );
-    this.element = importedNode.firstElementChild as HTMLElement;
-    this.element.id = `${this.type}-projects`;
+    this.element = importedNode.firstElementChild as U;
+    if (newElementId) {
+      this.element.id = newElementId;
+    }
 
+    this.attach(insertAtStart);
+  }
+
+  private attach(insertAtBeginning: boolean) {
+    // insertAdjacentElement...自身を基準とした相対的な位置に要素を挿入
+    this.hostElement.insertAdjacentElement(
+      insertAtBeginning ? 'afterbegin' : 'beforeend',
+      this.element
+    );
+  }
+
+  abstract configure(): void;
+  // abstract methodsはprivateはサポートしてない
+  abstract renderContent(): void;
+}
+
+// Project LIst class
+
+class ProjectList extends Component<HTMLDivElement, HTMLElement> {
+  assignedProjects: Project[];
+
+  constructor(private type: 'active' | 'finished') {
+    super('project-list', 'app', false, `${type}-projects`);
+    this.assignedProjects = [];
+
+    // 実行するのはinheritance classの方で
+    this.configure();
+    this.renderContent();
+  }
+  configure() {
     // listのconstructorが呼び出されるたびに、addListenerが実行される
     // 引数のcallback関数はjobとして配列に格納される
     projectState.addListener((projects: Project[]) => {
@@ -146,9 +188,13 @@ class ProjectList {
       this.assignedProjects = relevantProjects;
       this.renderProjects();
     });
+  }
 
-    this.attach();
-    this.renderContent();
+  renderContent() {
+    const listId = `${this.type}-projects-list`;
+    this.element.querySelector('ul')!.id = listId;
+    this.element.querySelector('h2')!.textContent =
+      this.type.toUpperCase() + ' PROJECTS';
   }
 
   private renderProjects() {
@@ -162,42 +208,15 @@ class ProjectList {
       listEl.appendChild(listItem);
     }
   }
-
-  private renderContent() {
-    const listId = `${this.type}-projects-list`;
-    this.element.querySelector('ul')!.id = listId;
-    this.element.querySelector('h2')!.textContent =
-      this.type.toUpperCase() + ' PROJECTS';
-  }
-
-  private attach() {
-    // insertAdjacentElement...自身を基準とした相対的な位置に要素を挿入
-    this.hostElement.insertAdjacentElement('beforeend', this.element);
-  }
 }
 
-class ProjectInput {
-  templateElement: HTMLTemplateElement;
-  hostElement: HTMLDivElement;
-  element: HTMLFormElement;
+class ProjectInput extends Component<HTMLDivElement, HTMLFormElement> {
   titleInputElement: HTMLInputElement;
   descriptionInputElement: HTMLInputElement;
   peopleInputElement: HTMLInputElement;
 
   constructor() {
-    this.templateElement = document.getElementById(
-      'project-input'
-    )! as HTMLTemplateElement;
-    this.hostElement = document.getElementById('app')! as HTMLDivElement;
-
-    // importNode...Nodeエレメントを複製する(recursiveに)
-    const importedNode = document.importNode(
-      this.templateElement.content,
-      true
-    );
-    this.element = importedNode.firstElementChild as HTMLFormElement;
-    this.element.id = 'user-input';
-
+    super('project-input', 'app', true, 'user-input');
     this.titleInputElement = this.element.querySelector(
       '#title'
     ) as HTMLInputElement;
@@ -207,11 +226,14 @@ class ProjectInput {
     this.peopleInputElement = this.element.querySelector(
       '#people'
     ) as HTMLInputElement;
-
     this.configure();
-
-    this.attach();
   }
+
+  configure() {
+    this.element.addEventListener('submit', this.submitHandler);
+  }
+
+  renderContent() {}
 
   private gatherUserInput(): [string, string, number] | void {
     // return tuple
@@ -263,15 +285,6 @@ class ProjectInput {
       projectState.addProject(title, desc, people);
       this.clearInputs();
     }
-  }
-
-  private configure() {
-    this.element.addEventListener('submit', this.submitHandler);
-  }
-
-  private attach() {
-    // insertAdjacentElement...自身を基準とした相対的な位置に要素を挿入
-    this.hostElement.insertAdjacentElement('afterbegin', this.element);
   }
 }
 
