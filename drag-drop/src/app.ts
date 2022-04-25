@@ -64,6 +64,18 @@ class ProjectState extends State<Project> {
       ProjectStatus.Active
     );
     this.projects.push(newProject);
+    // DOMの更新
+    this.updateListeners();
+  }
+  moveProject(projectId: string, newStatus: ProjectStatus) {
+    const project = this.projects.find(prj => prj.id === projectId);
+    if (project && project.status !== newStatus) {
+      project.status = newStatus;
+      // DOMの更新
+      this.updateListeners();
+    }
+  }
+  private updateListeners() {
     // listenerに格納されているjobがここで実行されている
     // listの描画が実行される
     // 蓄積されているproject情報をここでわたす
@@ -240,7 +252,13 @@ class ProjectList
     }
   }
   @autobind
-  dropHandler(_: DragEvent) {}
+  dropHandler(event: DragEvent) {
+    const prjId = event.dataTransfer!.getData('text/plain');
+    projectState.moveProject(
+      prjId,
+      this.type === 'active' ? ProjectStatus.Active : ProjectStatus.Finished
+    );
+  }
   @autobind
   dragLeaveHandler(_: DragEvent) {
     const listEl = this.element.querySelector('ul')!;
