@@ -1,10 +1,12 @@
+import { Sorter } from './Sorter';
+
 class Node {
   next: Node | null = null;
 
   constructor(public data: number) {}
 }
 
-export class LinkedList {
+export class LinkedList extends Sorter {
   // list内の最初のnodeを指すpointer
   head: Node | null = null;
 
