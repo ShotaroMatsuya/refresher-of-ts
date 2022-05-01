@@ -21,3 +21,16 @@ services:
     volumes:
       - ./app/node_modules:/app/node_modules
       - ./app:/app
+
+  # RUN Json-Server
+  json:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    working_dir: /app
+    ports:
+      - '3030:3030'
+    command: npm run json
+    volumes:
+      - ./app/node_modules:/app/node_modules
+      - ./app:/app
