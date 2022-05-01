@@ -5,15 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:webpack": "webpack serve",
-    "start:db": "json-server -w db.json --port 3030",
-    "start": "concurrently npm:start:*"
+    "start": "webpack serve",
+    "json": "json-server -w db.json --port 3030 -H 0.0.0.0"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "axios": "^0.27.2",
-    "concurrently": "^7.1.0",
     "json-server": "^0.17.0",
     "ts-loader": "^9.2.8",
     "typescript": "^4.6.3",
