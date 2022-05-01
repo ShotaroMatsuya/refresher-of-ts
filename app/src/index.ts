@@ -1,13 +1,10 @@
-import axios from 'axios';
+import { User } from './models/User';
 
-// axios
-//   .post('http://localhost:3030/users', {
-//     name: 'myname',
-//     age: 20,
-//   })
-//   .then(res => {
-//     console.log(res);
-//   })
-//   .catch(err => {
-//     console.log(err);
-//   });
+const user = new User({ id: 1 });
+
+let timer = setTimeout(() => {
+  user.set({ name: 'NEW NAME', age: 9999 });
+  user.save();
+}, 2000);
+
+clearTimeout(timer);

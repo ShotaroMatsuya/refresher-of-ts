@@ -1,4 +1,7 @@
+import axios, { AxiosResponse } from 'axios';
+
 interface UserProps {
+  id?: number;
   name?: string;
   age?: number;
   // [key: string]: any; // that's cheating
@@ -34,5 +37,23 @@ export class User {
     handlers.forEach(callback => {
       callback();
     });
+  }
+
+  fetch(): void {
+    axios
+      .get(`http://localhost:3030/users/${this.get('id')}`)
+      .then((response: AxiosResponse): void => {
+        this.set(response.data);
+      });
+  }
+
+  save(): void {
+    const id = this.get('id'); // idはdbにより自動採番される
+
+    if (id) {
+      axios.put(`http://localhost:3030/users/${id}`, this.data);
+    } else {
+      axios.post('http://localhost:3030/users', this.data);
+    }
   }
 }
