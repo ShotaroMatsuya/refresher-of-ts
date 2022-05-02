@@ -1,15 +1,13 @@
 import { User } from './models/User';
 
-const user = new User({ name: 'new record', age: 0 });
+const user = new User({ id: 1 });
 
 let timer = setTimeout(() => {
-  console.log(user.get('name'));
-
   user.on('change', () => {
-    console.log('User was changed');
+    console.log(user);
   });
 
-  user.trigger('change');
+  user.fetch();
 }, 3000);
 
 // clearTimeout(timer);
