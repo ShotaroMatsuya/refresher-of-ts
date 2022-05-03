@@ -1,13 +1,13 @@
-import { User } from './models/User';
+import { Collection } from './models/Collection';
 
-const user = User.buildUser({ id: 1, name: 'test user', age: 23 });
+const collection = new Collection('http://localhost:3030/users');
 
 let timer = setTimeout(() => {
-  user.on('save', () => {
-    console.log(user);
+  collection.on('change', () => {
+    console.log(collection);
   });
 
-  user.save();
+  collection.fetch();
 }, 3000);
 
-clearTimeout(timer);
+// clearTimeout(timer);
