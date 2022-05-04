@@ -1,13 +1,18 @@
-import { User } from './models/User';
+import { UserForm } from './views/UserForm';
+// import { User } from './models/User';
 
-const collection = User.buildUserCollection();
+const formEl = document.getElementById('root')! as HTMLFormElement;
+const userForm = new UserForm(formEl);
+userForm.render();
 
-let timer = setTimeout(() => {
-  collection.on('change', () => {
-    console.log(collection);
-  });
+// const collection = User.buildUserCollection();
 
-  collection.fetch();
-}, 3000);
+// let timer = setTimeout(() => {
+//   collection.on('change', () => {
+//     console.log(collection);
+//   });
 
-// clearTimeout(timer);
+//   collection.fetch();
+// }, 3000);
+
+// // clearTimeout(timer);
