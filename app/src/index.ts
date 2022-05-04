@@ -1,7 +1,7 @@
 import { UserForm } from './views/UserForm';
 import { User } from './models/User';
 
-const user = User.buildUser({ name: 'NAME', age: 20 });
+const user = User.buildUser({ name: 'NAME22', age: 22 });
 
 const formEl = document.getElementById('root')!;
 const userForm = new UserForm(formEl, user);
