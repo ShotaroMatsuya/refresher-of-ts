@@ -1,12 +1,22 @@
 import { Model } from '../models/Model';
 
 export abstract class View<T extends Model<K>, K> {
+  regions: { [key: string]: Element } = {};
+
   constructor(public parent: Element, public model: T) {
     this.bindModel();
   }
-
-  abstract eventsMap(): { [key: string]: () => void };
+  // 継承先で実装
   abstract template(): string;
+
+  // [optional]継承先で実装
+  regionsMap(): { [key: string]: string } {
+    return {};
+  }
+  // [optional]継承先で実装
+  eventsMap(): { [key: string]: () => void } {
+    return {};
+  }
 
   bindModel(): void {
     // modelのイベントリスナーを登録
@@ -26,6 +36,21 @@ export abstract class View<T extends Model<K>, K> {
     }
   }
 
+  // regionMapオブジェクトを吸い上げてnested Elementをmapping
+  mapRegions(fragment: DocumentFragment): void {
+    const regionsMap = this.regionsMap();
+
+    for (let key in regionsMap) {
+      const selector = regionsMap[key];
+      const element = fragment.querySelector(selector);
+      if (element) {
+        this.regions[key] = element;
+      }
+    }
+  }
+  // [optional]継承先で実装(nested componentのrenderingを担う)
+  onRender(): void {}
+
   render(): void {
     this.parent.innerHTML = '';
 
@@ -33,6 +58,9 @@ export abstract class View<T extends Model<K>, K> {
     templateElement.innerHTML = this.template();
 
     this.bindEvents(templateElement.content);
+    this.mapRegions(templateElement.content);
+
+    this.onRender();
 
     this.parent.append(templateElement.content);
   }
