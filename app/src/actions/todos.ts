@@ -12,8 +12,8 @@ export interface FetchTodosAction {
   type: ActionTypes.fetchTodos;
   payload: Todo[];
 }
-export interface DeleteTodosAction {
-  type: ActionTypes.deleteTodos;
+export interface DeleteTodoAction {
+  type: ActionTypes.deleteTodo;
   payload: number;
 }
 
@@ -29,10 +29,10 @@ export const fetchTodos = () => {
     });
   };
 };
-export const deleteTodos = (id: number): DeleteTodosAction => {
+export const deleteTodo = (id: number): DeleteTodoAction => {
   // 非同期関数ではないのでここでのdispatch不要
   return {
-    type: ActionTypes.deleteTodos,
+    type: ActionTypes.deleteTodo,
     payload: id,
   };
 };
