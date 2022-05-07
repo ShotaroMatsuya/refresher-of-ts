@@ -12,6 +12,10 @@ export interface FetchTodosAction {
   type: ActionTypes.fetchTodos;
   payload: Todo[];
 }
+export interface DeleteTodosAction {
+  type: ActionTypes.deleteTodos;
+  payload: number;
+}
 
 const url = 'https://jsonplaceholder.typicode.com/todos';
 
@@ -23,5 +27,12 @@ export const fetchTodos = () => {
       type: ActionTypes.fetchTodos,
       payload: response.data,
     });
+  };
+};
+export const deleteTodos = (id: number): DeleteTodosAction => {
+  // 非同期関数ではないのでここでのdispatch不要
+  return {
+    type: ActionTypes.deleteTodos,
+    payload: id,
   };
 };
